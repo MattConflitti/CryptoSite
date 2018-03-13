@@ -12,8 +12,10 @@
     <link rel="stylesheet" type="text/css" href="grid.css">
     <style>
       * {
-        font-family: 'Courier New', sans-serif;
-        outline: 1px solid black;
+        background:black;
+        color: #20C20E;
+        font-family: 'Courier New', Courier, monospace;
+        outline: 1px solid white;
       }
     </style>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
@@ -32,37 +34,54 @@
       firebase.initializeApp(config);
     </script>
     <script   src="https://code.jquery.com/jquery-3.3.1.slim.min.js"   integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="   crossorigin="anonymous"></script>
+    <script src="main.js"></script>
+    <script>
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          var isAnonymous = user.isAnonymous;
+          var uid = user.uid;
+          document.getElementById("sign-in").innerText = 'You are signed in anonymously.';
+          document.getElementById("user-id").innerText = 'User ID: '+uid;
+          // ...
+        } else {
+          firebase.auth().signInAnonymously().catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorCode + ': ' + errorMessage);
+          });
+        }
+      });
+    </script>
   </head>
   <body class="container">
-    <div class="row">
+    <header class="row">
       <div class="col-4" id="user-id"></div>
-      <div class="col-4" style="text-align:center">CryptoSite</div>
+      <div class="col-4" style="text-align:center"><h2>CryptoSite</h2></div>
       <div class="col-4" style="text-align:right" id="sign-in"></div>
+    </header>
+    <div class="row">
+      <div class="col-4">Test</div>
+      <div class="col-4">Test</div>
+      <div class="col-4">Test</div>
     </div>
     <div class="row">
-      <div class="col-4"></div>
-      <div class="col-4"></div>
-      <div class="col-4"></div>
+      <div class="col-4">Sidebar</div>
+      <div class="col-8">
+        <p>Submit a new message:</p>
+        <textarea id="cipher-plaintext"></textarea><br>
+        <select id="cipher-type">
+          <option value="0">Caesar Cipher</option>
+          <option value="1">Vignere Square</option>
+          <option value="2">Affine Shift</option>
+        </select>
+        <button id="submit-cipher">Submit</button>
+
+        <!-- this is where we will populate the last 10-15 messages from FB -->
+      </div>
     </div>
-    
-  <script src="main.js"></script>
-  <script>
-      firebase.auth().onAuthStateChanged(function(user) {
-          if (user) {
-            // User is signed in.
-            var isAnonymous = user.isAnonymous;
-            var uid = user.uid;
-            document.getElementById("sign-in").innerText = 'You are signed in anonymously.';
-            document.getElementById("user-id").innerText = 'User ID: '+uid;
-            // ...
-          } else {
-            firebase.auth().signInAnonymously().catch(function(error) {
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              console.log(errorCode + ': ' + errorMessage);
-            });
-          }
-        });
-      </script>
+    <footer class="row">
+      <div class="col-12">Footer</div>
+    </footer>
   </body>
 </html>

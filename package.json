@@ -1,0 +1,14 @@
+{
+  "name": "cryptosite",
+  "version": "0.0.1",
+  "description": "",
+  "repository": "",
+  "author": "",
+  "dependencies": {},
+  "scripts": {
+      "serve":"lite-server"
+  },
+  "devDependencies": {
+    "lite-server": "^2.3.0"
+  }
+}

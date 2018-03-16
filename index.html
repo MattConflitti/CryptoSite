@@ -69,7 +69,19 @@
       <div class="col-4">Sidebar</div>
       <div class="col-8">
         <p>Submit a new message:</p>
-        <textarea id="cipher-plaintext"></textarea><br>
+        <textarea placeholder="Plaintext" id="cipher-plaintext"></textarea>
+        <textarea placeholder="Ciphertext" id="cipher-ciphertext"></textarea><br>
+        <textarea placeholder="Shift amount" id="extra-cipher-info"></textarea><br>
+        <div id="affine-shift-text-area">
+          <p>f(x) = </p>
+          <input type="text" id="affine-shift-multiply">
+          <p>x + </p>
+          <input type="text" id="affine-shift-add">
+        </div>
+        <input type="radio" class="enc_or_dec" id="encrypt" name="enc_or_dec" value="enc">
+        <label for="encrypt">Encrypt</label>
+        <input type="radio" class="enc_or_dec" id="decrypt" name="enc_or_dec" value="dec">
+        <label for="decrypt">Decrypt</label>
         <select id="cipher-type">
           <option value="0">Caesar Cipher</option>
           <option value="1">Vignere Square</option>

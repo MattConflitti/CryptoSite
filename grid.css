@@ -248,3 +248,30 @@ p {
     max-width: 60rem;
   }
 }
+
+
+/* Component Styling */
+.col-8 label, .col-8 input {
+  outline: 1px solid black;
+}
+
+#affine-shift-text-area {
+  display: none;
+  position: relative;
+  bottom: 25px;
+  outline: black;
+  margin-bottom: 0px;
+}
+
+#affine-shift-text-area p {
+  display: inline;
+  outline: black;
+}
+
+#affine-shift-text-area input {
+  width:30px;
+}
+
+#extra-cipher-info {
+  height: 20px;
+}

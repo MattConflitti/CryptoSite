@@ -38,21 +38,40 @@ function encode_affine_shift(ascii_plain_text, multiplier, additive) {
 $(function() {
     // Event Handler triggered 'submit-cipher' button is clicked
     $("#submit-cipher").click(function() {
+        // $('#postwall').append("<div class='col-6'>Test</div>");
+
         var cipher_type = $("#cipher-type").val();
         var plain_text = $("#cipher-plaintext").val();
         var extra_info = $('#extra-cipher-info').val();
+        enc_data = {};
         if(cipher_type == 0) {
             caeser_shift(plain_text)
+            enc_data = {
+                'shift':3
+            };
         } else if(cipher_type == 1) {
             viginere_cipher(plain_text)
         } else if(cipher_type == 2 && $('#encrypt').is(':checked')) {
             var multiplier = parseInt($('#affine-shift-multiply').val());
             var additive = parseInt($('#affine-shift-add').val());
+            enc_data = {
+                'multiplier':multiplier,
+                'additive':additive
+            };
             var ascii_plain_text = string_to_ascii_array(plain_text);
             var ascii_cipher_text = encode_affine_shift(ascii_plain_text, multiplier, additive);
             var cipher_text = ascii_array_to_string(ascii_cipher_text);
             $('#cipher-ciphertext').val(cipher_text);
         }
+
+        var messageListRef = firebase.database().ref('posts');
+        var newMessageRef = messageListRef.push();
+        newMessageRef.set({
+            'date': 'gracehop',
+            'text': cipher_text,
+            'type': cipher_type,
+            'enc_data': enc_data
+        });
     });
 
     // Event Handler triggered when 'cipher-type' value changes

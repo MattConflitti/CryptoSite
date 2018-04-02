@@ -17,10 +17,15 @@
         font-family: 'Courier New', Courier, monospace;
         outline: 1px solid white;
       }
+      #cipher-plaintext,#cipher-ciphertext {
+        width:40%;
+        height:50px;
+      }
     </style>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase-database.js"></script>
     <script>
       // Initialize Firebase
       var config = {
@@ -61,12 +66,10 @@
       <div class="col-4" style="text-align:right" id="sign-in"></div>
     </header>
     <div class="row">
-      <div class="col-4">Test</div>
-      <div class="col-4">Test</div>
-      <div class="col-4">Test</div>
+      <div class="col-12"></div>
     </div>
     <div class="row">
-      <div class="col-4">Sidebar</div>
+      <div class="col-4">Post your message here for all to see! Pick an encryption method and leave a message for a wandering cryptanalyst.</div>
       <div class="col-8">
         <p>Submit a new message:</p>
         <textarea placeholder="Plaintext" id="cipher-plaintext"></textarea>
@@ -91,6 +94,14 @@
 
         <!-- this is where we will populate the last 10-15 messages from FB -->
       </div>
+    </div>
+    <div class="row">
+      <div class="col-12">The Wall</div>
+    </div>
+    <div id="postwall" class="row">
+      <div class="col-6">test</div>
+      <div class="col-6">test</div>
+      <div class="col-6">test</div>
     </div>
     <footer class="row">
       <div class="col-12">Footer</div>

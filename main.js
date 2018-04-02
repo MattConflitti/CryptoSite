@@ -38,7 +38,6 @@ function encode_affine_shift(ascii_plain_text, multiplier, additive) {
 $(function() {
     // Event Handler triggered 'submit-cipher' button is clicked
     $("#submit-cipher").click(function() {
-        // $('#postwall').append("<div class='col-6'>Test</div>");
 
         var cipher_type = $("#cipher-type").val();
         var plain_text = $("#cipher-plaintext").val();
@@ -64,10 +63,10 @@ $(function() {
             $('#cipher-ciphertext').val(cipher_text);
         }
 
-        var messageListRef = firebase.database().ref('posts');
-        var newMessageRef = messageListRef.push();
-        newMessageRef.set({
-            'date': 'gracehop',
+        var postsRef = firebase.database().ref('posts');
+        var newPostRef = postsRef.push();
+        newPostRef.set({
+            'date': new Date().getTime(),
             'text': cipher_text,
             'type': cipher_type,
             'enc_data': enc_data
@@ -88,5 +87,14 @@ $(function() {
         } else {
             $('#extra-cipher-info').css('visibility', 'hidden');
         }
+    });
+
+    //update wall
+    var ref = firebase.database().ref("posts");
+    ref.on('value', function(snapshot){
+        var post = snapshot.val();
+        //loop through objects to get pertinent info
+        console.log(post);
+        $('#postwall').append("<div class='col-6'>"+ post.date +" "+ post.text +"</div>");
     });
 });

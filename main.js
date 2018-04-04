@@ -92,7 +92,7 @@ $(function() {
     //update wall
     var ref = firebase.database().ref("posts");
     ref.on('value', function(snapshot){
-        var post = snapshot.val();
+        var post = Object.values(snapshot.val())[0];
         //loop through objects to get pertinent info
         console.log(post);
         $('#postwall').append("<div class='col-6'>"+ post.date +" "+ post.text +"</div>");

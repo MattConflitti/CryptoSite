@@ -15,11 +15,20 @@
         background:black;
         color: #20C20E;
         font-family: 'Courier New', Courier, monospace;
-        outline: 1px solid white;
+        /* outline: 1px solid white; */
       }
       #cipher-plaintext,#cipher-ciphertext {
         width:40%;
         height:50px;
+      }
+      .post {
+        outline: 1px solid white;
+        padding:8px;
+        font-size:.8em;
+      }
+
+      footer {
+        text-align:center;
       }
     </style>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
@@ -66,7 +75,7 @@
       <div class="col-4" style="text-align:right" id="sign-in"></div>
     </header>
     <div class="row">
-      <div class="col-12"></div>
+      <div class="col-12" style="outline:1px solid white"></div>
     </div>
     <div class="row">
       <div class="col-4">Post your message here for all to see! Pick an encryption method and leave a message for a wandering cryptanalyst.</div>
@@ -96,12 +105,14 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12">The Wall</div>
+      <div class="col-12" style="border-bottom:1px solid white">The Wall</div>
     </div>
     <div id="postwall" class="row">
     </div>
     <footer class="row">
-      <div class="col-12">Footer</div>
+      <div class="col-12" style="border-top:1px solid white">
+        &copy; MTH312. All Rights Reserved.
+      </div>
     </footer>
   </body>
 </html>

@@ -1,3 +1,9 @@
+METHODS = [
+    'Caesar',
+    'Vigenere',
+    'Affine Shift'
+]
+
 function caeser_shift(plain_text) {
     alert(plain_text);
 }
@@ -35,6 +41,7 @@ function encode_affine_shift(ascii_plain_text, multiplier, additive) {
     return ascii_cipher_text
 }
 
+
 $(function() {
     // Event Handler triggered 'submit-cipher' button is clicked
     $("#submit-cipher").click(function() {
@@ -66,6 +73,7 @@ $(function() {
         var postsRef = firebase.database().ref('posts');
         var newPostRef = postsRef.push();
         newPostRef.set({
+            'user_id': firebase.auth().currentUser.uid,
             'date': new Date().getTime(),
             'text': cipher_text,
             'type': cipher_type,
@@ -92,9 +100,31 @@ $(function() {
     //update wall
     var ref = firebase.database().ref("posts");
     ref.on('value', function(snapshot){
-        var post = Object.values(snapshot.val())[0];
-        //loop through objects to get pertinent info
-        console.log(post);
-        $('#postwall').append("<div class='col-6'>"+ post.date +" "+ post.text +"</div>");
+        $('#postwall').empty();
+        var posts = Object.values(snapshot.val());
+        posts.sort(function(a, b) {
+            a = new Date(a.date);
+            b = new Date(b.date);
+            return a>b ? -1 : a<b ? 1 : 0;
+        });
+        console.log(posts);
+        
+        max_posts = 30;
+        for(var i =0;i<max_posts;i++) {
+            var post = posts[i];
+            if(post == undefined) {
+                break;
+            }
+            $('#postwall').append(
+                `<div class="col-6 post">
+                    <div>User: ${post.user_id} </div>
+                    <div>Date Posted: ${new Date(post.date)} </div>
+                    <div>Encryption Method: ${METHODS[post.type]}</div>
+                    <div>Ciphertext:
+                        <p>${post.text}</p>
+                    </div>
+                </div>`);
+        }
+            
     });
 });

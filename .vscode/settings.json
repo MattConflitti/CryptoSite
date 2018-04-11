@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.awk": "shellscript",
+        "stdio.h": "c",
+        "stat.h": "c",
+        "types.h": "c",
+        "dirent.h": "c",
+        "string.h": "c",
+        "errno.h": "c"
+    }
+}

@@ -144,6 +144,7 @@ $(function() {
         }
     });
 
+
     //update wall
     var ref = firebase.database().ref("posts");
     ref.on('value', function(snapshot){
@@ -162,6 +163,17 @@ $(function() {
             if(post == undefined) {
                 break;
             }
+            post_key = "";
+            if(post.type == 0) {
+                //caesar
+                post_key = `<div class="post_key" style="display:none" data-ciphertext="${post.text}" data-type="${post.type}" data-key="${post.enc_data['shift']}"></div>`;
+            } else if(post.type == 1) {
+                //vigenere
+                post_key = `<div class="post_key" style="display:none" data-ciphertext="${post.text}" data-type="${post.type}" data-key="${post.enc_data['key']}"></div>`;
+            } else if(post.type == 2) {
+                //affine
+                post_key = `<div class="post_key" style="display:none" data-ciphertext="${post.text}" data-type="${post.type}" data-key="${post.enc_data['multiplier']} ${post.enc_data['additive']}"></div>`;
+            }
             $('#postwall').append(
                 `<div class="col-6 post">
                     <div>User: ${post.user_id} </div>
@@ -170,8 +182,52 @@ $(function() {
                     <div>Ciphertext:
                         <p>${post.text}</p>
                     </div>
+                    ${post_key}
                 </div>`);
         }
+
+        $('.post').click(function(e) {
+            $('html,body').animate({
+                scrollTop: 0
+            },500);
+            $('#form').css('outline', '2px solid #20C20E');
+            $('#form-hidden-div').show();
+            $('#form-hidden-div').fadeOut(2000, function() {
+                $('#form').css('outline', 'none');
+            });
+            var type = $(this).find('.post_key').data('type');
+            var key = $(this).find('.post_key').data('key');
+            var ciphertext = $(this).find('.post_key').data('ciphertext');
+            if(type == 0) {
+                //caesar
+                shift = key;
+                $("#cipher-type").val(type);
+                $("#cipher-type").change();
+                $("#cipher-plaintext").val("");
+                $('#decrypt').prop('checked', true);
+                $('#cipher-ciphertext').val(ciphertext);
+                $('#extra-cipher-info').val(shift);
+            } else if(type == 1) {
+                //vigenere
+                $("#cipher-type").val(type);
+                $("#cipher-type").change();
+                $("#cipher-plaintext").val("");
+                $('#decrypt').prop('checked', true);
+                $('#cipher-ciphertext').val(ciphertext);
+                $('#vigenere-key').val(key);
+            } else if(type == 2) {
+                //affine
+                multiplier = parseInt(key.split(" ")[0]);
+                additive = parseInt(key.split(" ")[1]);
+                $("#cipher-type").val(type);
+                $("#cipher-type").change();
+                $("#cipher-plaintext").val("");
+                $('#decrypt').prop('checked', true);
+                $('#cipher-ciphertext').val(ciphertext);
+                $('#affine-shift-multiply').val(multiplier);
+                $('#affine-shift-add').val(additive);
+            }
+        });
             
     });
 });

@@ -90,13 +90,16 @@
           <p>x + </p>
           <input type="text" id="affine-shift-add">
         </div>
+        <div id="vigenere-text-area">
+          <input type="text" placeholder="Key" id="vigenere-key">
+        </div>
         <input type="radio" class="enc_or_dec" id="encrypt" name="enc_or_dec" value="enc">
         <label for="encrypt">Encrypt</label>
         <input type="radio" class="enc_or_dec" id="decrypt" name="enc_or_dec" value="dec">
         <label for="decrypt">Decrypt</label>
         <select id="cipher-type">
           <option value="0">Caesar Cipher</option>
-          <option value="1">Vignere Square</option>
+          <option value="1">Vigenere Square</option>
           <option value="2">Affine Shift</option>
         </select>
         <button id="submit-cipher">Submit</button>

@@ -263,6 +263,14 @@ p {
   margin-bottom: 0px;
 }
 
+#vigenere-text-area {
+  display: none;
+  position: relative;
+  bottom: 25px;
+  outline: black;
+  margin-bottom: 0px;
+}
+
 #affine-shift-text-area p {
   display: inline;
   outline: black;

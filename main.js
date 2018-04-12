@@ -19,8 +19,18 @@ function caeser_shift(plain_text, amount) {
     return output;
 }
 
-function viginere_cipher(plain_text) {
-    alert(plain_text);
+function vigenere_cipher(plain_text, key, isEncrypt) {
+    var output = "";
+    for (var i = 0; i < plain_text.length; i++) {
+        idx = 0;
+        if(isEncrypt) {
+            idx = (A.indexOf(plain_text[i])+A.indexOf(key[i%key.length])) % A.length;
+        } else {
+            idx = (A.indexOf(plain_text[i])-A.indexOf(key[i%key.length])) % A.length;
+        }
+        output += A[idx];
+    }
+    return output;
 }
 
 // Accepts string as argument and returns array of ascii values
@@ -73,8 +83,17 @@ $(function() {
             plain_text = caeser_shift(cipher_text, extra_info * -1)
             console.log(extra_info * -1)
             alert(plain_text)
-        } else if(cipher_type == 1) {
-            viginere_cipher(plain_text)
+        } else if(cipher_type == 1 && $('#encrypt').is(':checked')) {
+            var key = $('#vigenere-key').val();
+            cipher_text = vigenere_cipher(plain_text, key, true);
+            enc_data = {
+                'key':key
+            };
+            encrypted = true;
+        } else if(cipher_type == 1 && $('#decrypt').is(':checked')) {
+            var key = $('#vigenere-key').val();
+            plain_text = vigenere_cipher(cipher_text, key, false);
+            alert(plain_text);
         } else if(cipher_type == 2 && $('#encrypt').is(':checked')) {
             var multiplier = parseInt($('#affine-shift-multiply').val());
             var additive = parseInt($('#affine-shift-add').val());
@@ -108,13 +127,20 @@ $(function() {
         if(cipher_type == 0) {
             $("#affine-shift-text-area").hide();
             $('#extra-cipher-info').show();
+            $('#vigenere-text-area').hide();
             $('#extra-cipher-info').attr('placeholder', 'Shift amount goes here');
+        }
+        else if(cipher_type == 1) {
+            $("#affine-shift-text-area").hide();
+            $('#extra-cipher-info').hide();
+            $('#vigenere-text-area').show();
         }
         else if(cipher_type == 2) {
             $("#affine-shift-text-area").show();
             $('#extra-cipher-info').hide();
+            $('#vigenere-text-area').hide();
         } else {
-            $('#extra-cipher-info').css('visibility', 'hidden');
+            $('#extra-cipher-info').hide();
         }
     });
 

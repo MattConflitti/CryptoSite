@@ -4,21 +4,17 @@ METHODS = [
     'Affine Shift'
 ]
 
-function caeser_shift(plain_text, amount) {
-    if (amount < 0)
-        return caeser_shift(plain_text, amount + 26);
-    var output = '';
-    for (var i = 0; i < plain_text.length; i ++) {
-        var c = plain_text[i];
-        if (c.match(/[a-z]/i)) {
-            var code = plain_text.charCodeAt(i);
-            if ((code >= 65) && (code <= 90))
-                c = String.fromCharCode(((code - 65 + amount) % 26) + 65);
-            else if ((code >= 97) && (code <= 122))
-                c = String.fromCharCode(((code - 97 + amount) % 26) + 97);
+A = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*() -_=+,./;:'\"[{}]";
 
+function caeser_shift(plain_text, amount) {
+    var amount = parseInt(amount);
+    var output = "";
+    for (var i = 0; i < plain_text.length; i++) {
+        idx = (A.indexOf(plain_text[i])+amount) % A.length;
+        if(idx < 0) {
+            idx = idx + A.length;
         }
-        output += c;
+        output += A[idx];
     }
     return output;
 }
@@ -68,6 +64,7 @@ $(function() {
         enc_data = {};
         if(cipher_type == 0 && $('#encrypt').is(':checked')) {
             cipher_text = caeser_shift(plain_text, extra_info)
+            console.log("extra info" + extra_info);
             enc_data = {
                 'shift':3
             };

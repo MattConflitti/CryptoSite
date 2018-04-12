@@ -4,8 +4,23 @@ METHODS = [
     'Affine Shift'
 ]
 
-function caeser_shift(plain_text) {
-    alert(plain_text);
+function caeser_shift(plain_text, amount) {
+    if (amount < 0)
+        return caeser_shift(plain_text, amount + 26);
+    var output = '';
+    for (var i = 0; i < plain_text.length; i ++) {
+        var c = plain_text[i];
+        if (c.match(/[a-z]/i)) {
+            var code = plain_text.charCodeAt(i);
+            if ((code >= 65) && (code <= 90))
+                c = String.fromCharCode(((code - 65 + amount) % 26) + 65);
+            else if ((code >= 97) && (code <= 122))
+                c = String.fromCharCode(((code - 97 + amount) % 26) + 97);
+
+        }
+        output += c;
+    }
+    return output;
 }
 
 function viginere_cipher(plain_text) {
@@ -45,16 +60,22 @@ function encode_affine_shift(ascii_plain_text, multiplier, additive) {
 $(function() {
     // Event Handler triggered 'submit-cipher' button is clicked
     $("#submit-cipher").click(function() {
-
+        var encrypted = false;
         var cipher_type = $("#cipher-type").val();
         var plain_text = $("#cipher-plaintext").val();
+        var cipher_text = $('#cipher-ciphertext').val();
         var extra_info = $('#extra-cipher-info').val();
         enc_data = {};
-        if(cipher_type == 0) {
-            caeser_shift(plain_text)
+        if(cipher_type == 0 && $('#encrypt').is(':checked')) {
+            cipher_text = caeser_shift(plain_text, extra_info)
             enc_data = {
                 'shift':3
             };
+            encrypted = true;
+        } else if (cipher_type == 0 && $('#decrypt').is(':checked')){
+            plain_text = caeser_shift(cipher_text, extra_info * -1)
+            console.log(extra_info * -1)
+            alert(plain_text)
         } else if(cipher_type == 1) {
             viginere_cipher(plain_text)
         } else if(cipher_type == 2 && $('#encrypt').is(':checked')) {
@@ -68,17 +89,20 @@ $(function() {
             var ascii_cipher_text = encode_affine_shift(ascii_plain_text, multiplier, additive);
             var cipher_text = ascii_array_to_string(ascii_cipher_text);
             $('#cipher-ciphertext').val(cipher_text);
+            encrypted = true;
         }
 
-        var postsRef = firebase.database().ref('posts');
-        var newPostRef = postsRef.push();
-        newPostRef.set({
-            'user_id': firebase.auth().currentUser.uid,
-            'date': new Date().getTime(),
-            'text': cipher_text,
-            'type': cipher_type,
-            'enc_data': enc_data
-        });
+        if(encrypted) {
+            var postsRef = firebase.database().ref('posts');
+            var newPostRef = postsRef.push();
+            newPostRef.set({
+                'user_id': firebase.auth().currentUser.uid,
+                'date': new Date().getTime(),
+                'text': cipher_text,
+                'type': cipher_type,
+                'enc_data': enc_data
+            });
+        }
     });
 
     // Event Handler triggered when 'cipher-type' value changes

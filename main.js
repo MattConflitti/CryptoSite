@@ -76,6 +76,8 @@ function affine_shift(plain_text, a, b, isEncrypt) {
 }
 
 $(function() {
+    $("#alphabet").html(`Cipher Alphabet:<br>${A}`)
+
     // Event Handler triggered 'submit-cipher' button is clicked
     $("#submit-cipher").click(function() {
         var encrypted = false;

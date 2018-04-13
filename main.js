@@ -33,35 +33,47 @@ function vigenere_cipher(plain_text, key, isEncrypt) {
     return output;
 }
 
-// Accepts string as argument and returns array of ascii values
-function string_to_ascii_array(plain_text) {
-    char_array = plain_text.split("");
-    for(char in char_array) {
-        char_array[char] = char_array[char].charCodeAt(0);
-    }
-    return char_array;
-}
+// https://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
+function isInt(value) {
+    return !isNaN(value) && 
+           parseInt(Number(value)) == value && 
+           !isNaN(parseInt(value, 10));
+  }
 
-// Accepts ascii array and returns its alphanumeric representation
-function ascii_array_to_string(ascii_array){
-    for(i in ascii_array){
-        ascii_array[i] = String.fromCharCode(ascii_array[i]);
-    }
-    return ascii_array.join("");
-}
+// https://stackoverflow.com/questions/26985808/calculating-the-modular-inverse-in-javascript
+function xgcd(a, b) { 
+    console.log(a)
+    console.log(b)
 
-/* Plug every ascii value in the plaintext into user-given equation
-Ascii table for js goes from 0-126, but 0-31 are reserved for special
-non-printable chars.  So we mod 95 (127 - 32) and then add 32.
-This allows are ascii values to span between 32 and 126            */
-function encode_affine_shift(ascii_plain_text, multiplier, additive) {
-    var ascii_cipher_text = [];
-    for(num in ascii_plain_text) {
-        ascii_cipher_text.push(((multiplier*ascii_plain_text[num] + additive) % 95)+ 32);
+    if (b == 0) {
+      return [1, 0, a];
     }
-    return ascii_cipher_text
-}
+ 
+    temp = xgcd(b, a % b);
+    x = temp[0];
+    y = temp[1];
+    d = temp[2];
+    return [y, x-y*Math.floor(a/b), d];
+  }
 
+function affine_shift(plain_text, a, b, isEncrypt) {
+    var numerical_rep = [];
+    var output = [];
+    for (var i = 0; i < plain_text.length; i++) {
+        var c = A.indexOf(plain_text[i])
+        if(isEncrypt) {
+            output.push(A[(c*a + b)%A.length])
+        } else {
+            //TODO find inverse of a%A.length and decrypt
+            var d = xgcd(a, A.length)[0];
+            if(d < 0) {
+                d += A.length;
+            }
+            output.push(A[(d*(c-b))%A.length])
+        }
+    }
+    return output.join("");
+}
 
 $(function() {
     // Event Handler triggered 'submit-cipher' button is clicked
@@ -72,6 +84,16 @@ $(function() {
         var cipher_text = $('#cipher-ciphertext').val();
         var extra_info = $('#extra-cipher-info').val();
         enc_data = {};
+
+        if(plain_text.length == 0 && $('#encrypt').is(':checked')) {
+            alert("Fill in plaintext!");
+            return;
+        }
+        if(cipher_text.length == 0 && $('#decrypt').is(':checked')) {
+            alert("Fill in ciphertext!");
+            return;
+        }
+
         if(cipher_type == 0 && $('#encrypt').is(':checked')) {
             cipher_text = caeser_shift(plain_text, extra_info)
             console.log("extra info" + extra_info);
@@ -82,7 +104,8 @@ $(function() {
         } else if (cipher_type == 0 && $('#decrypt').is(':checked')){
             plain_text = caeser_shift(cipher_text, extra_info * -1)
             console.log(extra_info * -1)
-            alert(plain_text)
+            $('#cipher-plaintext').val(plain_text);
+            alert("Plaintext: " + plain_text)
         } else if(cipher_type == 1 && $('#encrypt').is(':checked')) {
             var key = $('#vigenere-key').val();
             cipher_text = vigenere_cipher(plain_text, key, true);
@@ -93,19 +116,38 @@ $(function() {
         } else if(cipher_type == 1 && $('#decrypt').is(':checked')) {
             var key = $('#vigenere-key').val();
             plain_text = vigenere_cipher(cipher_text, key, false);
-            alert(plain_text);
+            $('#cipher-plaintext').val(plain_text);
+            alert("Plaintext: " + plain_text);
         } else if(cipher_type == 2 && $('#encrypt').is(':checked')) {
             var multiplier = parseInt($('#affine-shift-multiply').val());
             var additive = parseInt($('#affine-shift-add').val());
-            enc_data = {
-                'multiplier':multiplier,
-                'additive':additive
-            };
-            var ascii_plain_text = string_to_ascii_array(plain_text);
-            var ascii_cipher_text = encode_affine_shift(ascii_plain_text, multiplier, additive);
-            var cipher_text = ascii_array_to_string(ascii_cipher_text);
-            $('#cipher-ciphertext').val(cipher_text);
-            encrypted = true;
+            if(!(isInt(multiplier) && isInt(additive))) {
+                alert("Fill in both parameters!");
+                return;
+            }
+
+            if(xgcd(multiplier,A.length)[2] != 1) {
+                alert("Pick multiplier with inverse mod "+ A.length +".");
+            } else {
+                enc_data = {
+                    'multiplier':multiplier,
+                    'additive':additive
+                };
+                var cipher_text = affine_shift(plain_text,multiplier,additive,true);
+                $('#cipher-ciphertext').val(cipher_text);
+                
+                encrypted = true;
+            }
+        } else if(cipher_type == 2 && $('#decrypt').is(':checked')) {
+            var multiplier = parseInt($('#affine-shift-multiply').val());
+            var additive = parseInt($('#affine-shift-add').val());
+            if(xgcd(multiplier,A.length)[2] != 1) {
+                alert("Pick multiplier with inverse mod "+ A.length +".");
+            } else {
+                var plain_text = affine_shift(cipher_text,multiplier,additive,false);
+                $('#cipher-plaintext').val(plain_text);
+                alert("Plaintext: " + plain_text);
+            }
         }
 
         if(encrypted) {
@@ -162,6 +204,10 @@ $(function() {
             var post = posts[i];
             if(post == undefined) {
                 break;
+            }
+            if(post.text.length == 0) {
+                max_posts++;
+                continue;
             }
             post_key = "";
             if(post.type == 0) {

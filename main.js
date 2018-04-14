@@ -8,6 +8,10 @@ A = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*() -_
 
 function caeser_shift(plain_text, amount) {
     var amount = parseInt(amount);
+    if(!isInt(amount)){
+        alert("Shift amount must be an integer!");
+        return;
+    }
     var output = "";
     for (var i = 0; i < plain_text.length; i++) {
         idx = (A.indexOf(plain_text[i])+amount) % A.length;

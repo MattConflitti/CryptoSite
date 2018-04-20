@@ -8,6 +8,10 @@ A = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*() -_
 
 function caeser_shift(plain_text, amount) {
     var amount = parseInt(amount);
+    if(!isInt(amount)){
+        alert("Shift amount must be an integer!");
+        return;
+    }
     var output = "";
     for (var i = 0; i < plain_text.length; i++) {
         idx = (A.indexOf(plain_text[i])+amount) % A.length;
@@ -19,6 +23,15 @@ function caeser_shift(plain_text, amount) {
     return output;
 }
 
+function in_alphabet(phrase) {
+    for (var i = 0; i < phrase.length; i++) {
+        if(!(A.includes(phrase[i]))){
+            return false;
+        }
+    }
+    return true;
+}
+
 function vigenere_cipher(plain_text, key, isEncrypt) {
     var output = "";
     for (var i = 0; i < plain_text.length; i++) {
@@ -26,7 +39,7 @@ function vigenere_cipher(plain_text, key, isEncrypt) {
         if(isEncrypt) {
             idx = (A.indexOf(plain_text[i])+A.indexOf(key[i%key.length])) % A.length;
         } else {
-            idx = (A.indexOf(plain_text[i])-A.indexOf(key[i%key.length])) % A.length;
+            idx = (A.indexOf(plain_text[i])-A.indexOf(key[i%key.length]) + A.length) % A.length;
         }
         output += A[idx];
     }
@@ -57,22 +70,23 @@ function xgcd(a, b) {
   }
 
 function affine_shift(plain_text, a, b, isEncrypt) {
-    var numerical_rep = [];
-    var output = [];
+    var output = "";
     for (var i = 0; i < plain_text.length; i++) {
-        var c = A.indexOf(plain_text[i])
+        idx = 0;
+        var c = A.indexOf(plain_text[i]);
+        var d = xgcd(a, A.length)[0];
+        if(d < 0) {
+             d += A.length;
+         }     
+        
         if(isEncrypt) {
-            output.push(A[(c*a + b)%A.length])
+            idx=(c*a + b)%A.length;
         } else {
-            //TODO find inverse of a%A.length and decrypt
-            var d = xgcd(a, A.length)[0];
-            if(d < 0) {
-                d += A.length;
-            }
-            output.push(A[(d*(c-b))%A.length])
+            idx=((d*(c-b))+d*A.length)%A.length;
         }
+        output += A[idx];
     }
-    return output.join("");
+    return output
 }
 
 $(function() {
@@ -96,6 +110,16 @@ $(function() {
             return;
         }
 
+        if(!in_alphabet(plain_text) && $('#encrypt').is(':checked')) {
+            alert("Plaintext must be within cipher alphabet!");
+            return;
+        }                   
+        
+         if(!in_alphabet(cipher_text) && $('#decrypt').is(':checked')) {
+            alert("Ciphertext must be within cipher alphabet!");
+            return;
+        }           
+        
         if(cipher_type == 0 && $('#encrypt').is(':checked')) {
             cipher_text = caeser_shift(plain_text, extra_info)
             console.log("extra info" + extra_info);
@@ -114,11 +138,19 @@ $(function() {
             enc_data = {
                 'key':key
             };
+            if(!in_alphabet(key)){
+                alert("Key must be within the cipher alphabet!");
+                return;
+            }
             encrypted = true;
         } else if(cipher_type == 1 && $('#decrypt').is(':checked')) {
             var key = $('#vigenere-key').val();
             plain_text = vigenere_cipher(cipher_text, key, false);
             $('#cipher-plaintext').val(plain_text);
+            if(!in_alphabet(key)){
+                alert("Key must be within the cipher alphabet!");
+                return;
+            }            
             alert("Plaintext: " + plain_text);
         } else if(cipher_type == 2 && $('#encrypt').is(':checked')) {
             var multiplier = parseInt($('#affine-shift-multiply').val());
